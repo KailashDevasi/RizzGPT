@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RizzGPT - Desi Flirting Assistant</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap" rel="stylesheet" />
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden; /* prevents scrollbars from animated bg */
+      height: 100%;
+      width: 100%;
+    }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: radial-gradient(circle at top left, #ffe6f0, #ffddee, #ffcce0);
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      position: relative;
+    }
+
+    .animated-bg {
+      position: absolute;
+      width: 150vw;
+      height: 150vh;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) rotate(0deg);
+      background: conic-gradient(from 0deg, #ff89bb, #ffd6e0, #ffa9f9, #ff89bb);
+      animation: rotateBg 30s linear infinite;
+      z-index: -2;
+      filter: blur(100px);
+      opacity: 0.25;
+      transform-origin: center center;
+    }
+
+    @keyframes rotateBg {
+      from {
+        transform: translate(-50%, -50%) rotate(0deg);
+      }
+      to {
+        transform: translate(-50%, -50%) rotate(360deg);
+      }
+    }
+
+    .float-bubble {
+      position: absolute;
+      border-radius: 50%;
+      opacity: 0.12;
+      animation: float 12s infinite ease-in-out alternate;
+      z-index: -1;
+    }
+
+    .float-bubble:nth-child(2) {
+      width: 200px;
+      height: 200px;
+      top: 10%;
+      left: 5%;
+      background: #ff4081;
+      animation-delay: 0s;
+    }
+
+    .float-bubble:nth-child(3) {
+      width: 150px;
+      height: 150px;
+      bottom: 15%;
+      right: 10%;
+      background: #ff80ab;
+      animation-delay: 3s;
+    }
+
+    .float-bubble:nth-child(4) {
+      width: 100px;
+      height: 100px;
+      top: 60%;
+      left: 70%;
+      background: #ff4081;
+      animation-delay: 6s;
+    }
+
+    @keyframes float {
+      0% {
+        transform: translateY(0) scale(1);
+      }
+      100% {
+        transform: translateY(-40px) scale(1.1);
+      }
+    }
+
+    .container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;  /* key to spacing out content */
+  align-items: center;
+  background: rgba(255, 255, 255, 0.35);
+  backdrop-filter: blur(20px);
+  border-radius: 20px;
+  padding: 40px;
+  width: 100%;
+  max-width: 650px;
+  height: 700px;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+  border: 1.5px solid #ffffff44;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+  margin: 0 15px;
+}
+
+.top {
+  flex-shrink: 0;
+}
+
+.bottom {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  width: 100%;
+}
+    h1 {
+      font-size: 2.7rem;
+      font-weight: 900;
+      color: #222;
+      margin-bottom: 15px;
+    }
+
+    .tagline {
+      font-size: 1.05rem;
+      color: #555;
+      margin-bottom: 30px;
+    }
+
+    input#inputText {
+      width: 100%;
+      padding: 16px 20px;
+      border: none;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.6);
+      font-size: 1rem;
+      color: #333;
+      outline: none;
+      transition: 0.3s ease;
+      box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.05);
+    }
+
+    input#inputText::placeholder {
+      color: #888;
+    }
+
+    input#inputText:focus {
+      background: #fff;
+      box-shadow: 0 0 0 2px #ff89aa66;
+    }
+
+    button#generateBtn {
+      margin-top: 20px;
+      padding: 14px 30px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      border: none;
+      border-radius: 14px;
+      width: 60%;
+      align-self: center;
+      background: linear-gradient(135deg, #ff4081, #ff80ab);
+      color: #fff;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      box-shadow: 0 8px 20px #ff80ab55;
+    }
+
+    button#generateBtn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 10px 25px #ff408177;
+    }
+
+    button#generateBtn:active {
+      transform: scale(0.97);
+    }
+
+    #outputArea {
+      margin-top: 30px;
+      background: rgba(255, 255, 255, 0.5);
+      padding: 20px;
+      border-radius: 16px;
+      color: #222;
+      font-style: italic;
+      font-size: 1.1rem;
+      width: 100%;
+      min-height: 200px;
+      line-height: 1.6;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+      position: relative;
+    }
+
+    #outputArea.loading::after {
+      content: "💭 Thinking...";
+      position: absolute;
+      top: 12px;
+      right: 18px;
+      font-size: 1rem;
+      color: #888;
+      animation: fade 1.2s infinite ease-in-out;
+    }
+
+    @keyframes fade {
+      0%, 100% {
+        opacity: 0.5;
+      }
+      50% {
+        opacity: 1;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="animated-bg"></div>
+  <div class="float-bubble"></div>
+  <div class="float-bubble"></div>
+  <div class="float-bubble"></div>
+
+  <div class="container">
+    <div class="top">
+      <h1>RizzGPT 💬</h1>
+      <div class="tagline">Your AI-powered desi rizz master 😎</div>
+    </div>
+  
+    
+  
+    <div class="bottom">
+      <input id="inputText" type="text" placeholder="What's your situation, lover boy?" />
+      <button id="generateBtn">Hit me with Rizz</button>
+    </div>
+
+    <div id="outputArea">Your charming reply will appear here.</div>
+
+
+  </div>
+
+  <script>
+        const btn = document.getElementById('generateBtn');
+        const input = document.getElementById('inputText');
+        const output = document.getElementById('outputArea');
+
+        btn.addEventListener('click', async () => {
+        const text = input.value.trim();
+        if (!text) return;
+
+        output.textContent = "";
+        output.classList.add("loading");
+
+        const response = await fetch('http://127.0.0.1:8000/generate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ input_text: text })
+        });
+
+        const data = await response.json();
+        output.classList.remove("loading");
+        output.textContent = data.generated_text || "No rizz found. Try again!";
+    });
+
+
+
+
+    const inputText = document.getElementById('inputText');
+    const generateBtn = document.getElementById('generateBtn');
+    const outputArea = document.getElementById('outputArea');
+
+    
+    const rizzReplies = [
+  "Are you chai? Because I find my peace in your warmth.",
+  "If beauty was a crime, you'd be serving a life sentence, meri jaan.",
+  "Tere smile pe toh full Instagram post banta hai.",
+  "I don’t need a filter when I’m talking to you, asli glow hai.",
+  "Dil garden garden ho gaya after seeing your profile pic.",
+  "You + Me + Gol gappe = Perfect combo, kya bolti tu?",
+  "Main toh teri vibes ka permanent fan hoon, kya tu mere liye bhi kuch feel karti hai?",
+  "Teri aankhon mein aise doob jaaun ki drowning certificate banwa loon?",
+  "Tumse baat kar ke lagta hai duniya ki saari poetry samajh aa gayi.",
+  "Can I be the chai to your samosa? Perfect match!",
+  "Are you a magician? Because whenever I look at you, everyone else disappears.",
+  "Do you have a map? I keep getting lost in your eyes.",
+  "Are you wifi? Because I’m feeling a strong connection.",
+  "If you were a vegetable, you’d be a cute-cumber.",
+  "You must be tired because you’ve been running through my mind all day.",
+  "Is your name Google? Because you have everything I’ve been searching for.",
+  "Are you a loan? Because you’ve got my interest!",
+  "Do you like Star Wars? Because Yoda one for me.",
+  "I’m not a photographer, but I can definitely picture us together.",
+  "Is your dad a boxer? Because you’re a knockout!",
+  "Are you made of copper and tellurium? Because you’re Cu-Te.",
+  "Forget hydrogen, you should be the number one element!",
+  "If kisses were snowflakes, I’d send you a blizzard.",
+  "Are you a parking ticket? Because you’ve got ‘Fine’ written all over you.",
+  "Are you French? Because Eiffel for you.",
+  "You must be a keyboard, because you’re just my type.",
+  "Is your aura solar powered? Because you light up the room.",
+  "If beauty were time, you’d be eternity.",
+  "You’re like a software update, every time you come around, my heart restarts.",
+  "Are you an alien? Because you just abducted my heart.",
+  "Are you seriously a wizard? Because every time you talk, my dumbass heart skips a beat.",
+  "You’re hotter than a Rajasthani summer, and I’m sweating like a lovesick idiot.",
+  "I swear, if being sexy was a crime, you’d be behind bars for life.",
+  "You’re so damn cute, I wanna slap you and hug you at the same time, you crazy lunatic.",
+  "Is your Wi-Fi slow, or are you just messing with my feelings?",
+  "If looks could kill, I’d be six feet under by now, thanks to you.",
+  "You’re like that ‘arey yaar’ moment — annoying as hell, but I can’t live without you.",
+  "I don’t give a damn about what people say, you’re the queen of my chaos.",
+  "One look at you, and I’m like, ‘Bhagwan ne itna perfect insaan kaise banaya hoga?’",
+  "You’re the kinda crazy I want to mess up my life with, no regrets.",
+  "Are you made of magic or just pure nonsense? Because you got me hooked, idiot.",
+  "Girl, you’re a spicy mess and I’m the fool coming back for more every damn time.",
+  "Your smile is a weapon, and I’m ready to surrender.",
+  "Stop playing hard to get, I’m not here for games, queen.",
+  "Your attitude is a deadly combo of ‘don’t care’ and ‘own the room’.",
+  "You’re like the mirchi in my dal—spicy, chaotic, but absolutely essential.",
+  "Forget Netflix, I want a season of your ‘utter bakwaas and charm’ every day.",
+  "If being a badass was a sport, you’d be the damn champion, hands down.",
+  "You’re the reason I curse my own brain for falling this hard—and weirdly, I love it."
+];
+
+    function getRandomRizz() {
+      const randomIndex = Math.floor(Math.random() * rizzReplies.length);
+      return rizzReplies[randomIndex];
+    }
+
+    const placeholders = [
+      "Type whatever, I don’t give a damn 😂",
+      "Write your crap, I’ll handle the magic 💥",
+      "Input? Meh, I’ve got better lines 🤷‍♂️",
+      "Say something, anything... it won’t change shit 😎",
+      "Type your nonsense, I’m just here to rizz 🔥",
+      "Your words? Just background noise to my swag 🎧",
+      "Hit me with your best worst, I’m ready 🤡",
+      "Speak now or forever hold your peace — but I don’t care 😜",
+      "Enter your gibberish; I’ll do the heavy lifting 🏋️‍♂️"
+    ];
+
+    function setRandomPlaceholder() {
+      const randomIndex = Math.floor(Math.random() * placeholders.length);
+      inputText.placeholder = placeholders[randomIndex];
+    }
+
+    generateBtn.addEventListener('click', () => {
+      const userInput = inputText.value.trim();
+      if (!userInput) {
+        outputArea.textContent = "Bhai, pehle kuch likh toh de, phir rizz milega! \n First drop some bars, then expect the spark. ";
+        return;
+      }
+
+      setRandomPlaceholder();
+      inputText.value = '';
+
+      outputArea.textContent = "Soch raha hoon tera perfect rizz...";
+      outputArea.classList.add('loading');
+
+      setTimeout(() => {
+        outputArea.textContent = getRandomRizz();
+        outputArea.classList.remove('loading');
+      }, 1800);
+      
+    });
+
+    // Optional: Enter key triggers button
+    inputText.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        generateBtn.click();
+      }
+    });
+
+    
+
+    window.onload = setRandomPlaceholder;
+
+  </script>
+
+</body>
+</html>
